@@ -1,6 +1,8 @@
 import { DynamoDBAdapter } from '@next-auth/dynamodb-adapter';
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
 
+import { SvelteKitAuth } from '@auth/sveltekit';
+
 export function simulateDynamoAdapter() {
 	const dynamoConfig = {};
 	const client = DynamoDBDocument.from(new DynamoDB(dynamoConfig), {
@@ -11,7 +13,9 @@ export function simulateDynamoAdapter() {
 		}
 	});
 
-	return DynamoDBAdapter(client, { tableName: 'DYNAMO_AUTH_TABLE' });
+	return SvelteKitAuth({
+		adapter: DynamoDBAdapter(client, { tableName: 'DYNAMO_AUTH_TABLE' })
+	});
 }
 
 export async function handle({ event, resolve }) {
