@@ -1,9 +1,17 @@
 import { DynamoDBAdapter } from '@next-auth/dynamodb-adapter';
-
-console.log(typeof DynamoDBAdapter);
+import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
 
 export function simulateDynamoAdapter() {
-	return DynamoDBAdapter(null, { tableName: 'DYNAMO_AUTH_TABLE' });
+	const dynamoConfig = {};
+	const client = DynamoDBDocument.from(new DynamoDB(dynamoConfig), {
+		marshallOptions: {
+			convertEmptyValues: true,
+			removeUndefinedValues: true,
+			convertClassInstanceToMap: true
+		}
+	});
+
+	return DynamoDBAdapter(client, { tableName: 'DYNAMO_AUTH_TABLE' });
 }
 
 export async function handle({ event, resolve }) {
