@@ -1,33 +1,44 @@
+import { sequence } from '@sveltejs/kit/hooks';
 import { DynamoDBAdapter } from '@next-auth/dynamodb-adapter';
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
+import GoogleProvider from '@auth/core/providers/google';
 
 import { SvelteKitAuth } from '@auth/sveltekit';
 
-var auth = {};
+const dynamoConfig = {};
+const client = DynamoDBDocument.from(new DynamoDB(dynamoConfig), {
+	marshallOptions: {
+		convertEmptyValues: true,
+		removeUndefinedValues: true,
+		convertClassInstanceToMap: true
+	}
+});
 
-try {
-	const dynamoConfig = {};
-	const client = DynamoDBDocument.from(new DynamoDB(dynamoConfig), {
-		marshallOptions: {
-			convertEmptyValues: true,
-			removeUndefinedValues: true,
-			convertClassInstanceToMap: true
-		}
-	});
+const auth = SvelteKitAuth({
+	providers: [
+		// @ts-ignore
+		GoogleProvider({
+			clientId: 'GOOGLE_AUTH_CLIENT_ID',
+			clientSecret: 'GOOGLE_AUTH_SECRET'
+		})
+	],
+	session: {
+		maxAge: 60 * 60 * 24 * 365,
+		strategy: 'jwt'
+	},
 
-	auth = SvelteKitAuth({
-		adapter: DynamoDBAdapter(client, { tableName: 'DYNAMO_AUTH_TABLE' })
-	});
-} catch (er) {}
+	secret: 'NEXTAUTH_SECRET',
 
-export async function handle({ event, resolve }) {
+	adapter: DynamoDBAdapter(client, { tableName: 'DYNAMO_AUTH_TABLE' })
+});
+
+export async function handleFn({ event, resolve }) {
 	if (event.url.pathname.startsWith('/custom')) {
 		return new Response('custom response');
-	}
-
-	if (auth?.()) {
 	}
 
 	const response = await resolve(event);
 	return response;
 }
+
+export const handle = sequence(handleFn, auth);
