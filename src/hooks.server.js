@@ -1,4 +1,6 @@
 import { sequence } from '@sveltejs/kit/hooks';
+
+import { DynamoDB } from '@aws-sdk/client-dynamodb';
 import { DynamoDBAdapter } from '@next-auth/dynamodb-adapter';
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb';
 import GoogleProvider from '@auth/core/providers/google';
