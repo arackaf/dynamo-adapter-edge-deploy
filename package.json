@@ -12,7 +12,8 @@
 	"dependencies": {
 		"@auth/core": "^0.3.0",
 		"@auth/sveltekit": "^0.2.0",
-		"@next-auth/dynamodb-adapter": "1.0.6",
+		"@aws-sdk/lib-dynamodb": "^3.264.0",
+		"@next-auth/dynamodb-adapter": "^2.0.0-experimental.1",
 		"svelte-preprocess": "^5.0.1"
 	},
 	"devDependencies": {
